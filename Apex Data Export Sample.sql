@@ -6,12 +6,15 @@ DECLARE
   L_EXPORT       APEX_DATA_EXPORT.T_EXPORT;
   L_HIGHLIGHTS   APEX_DATA_EXPORT.T_HIGHLIGHTS;
 BEGIN
+  ---- highlight row ----
+  /* if you want to  highlight just column , you must to set this parameter P_DISPLAY_COLUMN => 'YOUR_CLOUMN' */ 
   APEX_DATA_EXPORT.ADD_HIGHLIGHT(P_HIGHLIGHTS       => L_HIGHLIGHTS,
                                  P_ID               => 1,
                                  P_VALUE_COLUMN     => 'HIGHLIGHT1',
                                  P_DISPLAY_COLUMN   => '',
                                  P_TEXT_COLOR       => '#ffffff',
                                  P_BACKGROUND_COLOR => '#5f7d4f');
+  ---- aggregate ----
   APEX_DATA_EXPORT.ADD_AGGREGATE(P_AGGREGATES           => L_AGGREGATES,
                                  P_LABEL                => 'Sum',
                                  P_FORMAT_MASK          => 'FML999G999G999G999G990D00',
@@ -19,13 +22,16 @@ BEGIN
                                  P_VALUE_COLUMN         => 'AGGREGATE1',
                                  P_OVERALL_LABEL        => 'Total sum',
                                  P_OVERALL_VALUE_COLUMN => 'OVERALL1');
-  ---------------aggregate
+  
   APEX_DATA_EXPORT.ADD_COLUMN(P_COLUMNS         => L_COLUMNS,
                               P_NAME            => 'DEPTNO',
                               P_IS_COLUMN_BREAK => TRUE);
+
   APEX_DATA_EXPORT.ADD_COLUMN(P_COLUMNS => L_COLUMNS, P_NAME => 'EMPNO');
   APEX_DATA_EXPORT.ADD_COLUMN(P_COLUMNS => L_COLUMNS, P_NAME => 'ENAME');
   APEX_DATA_EXPORT.ADD_COLUMN(P_COLUMNS => L_COLUMNS, P_NAME => 'SAL');
+
+
   L_CONTEXT := APEX_EXEC.OPEN_QUERY_CONTEXT(P_LOCATION  => APEX_EXEC.C_LOCATION_LOCAL_DB,
                                             P_SQL_QUERY => '
                                             SELECT DEPTNO,
@@ -41,13 +47,52 @@ BEGIN
                                               FROM EBA_DEMO_APPR_EMP
                                             ');
 
+  ---- print config ----
+  /* You can set these parameters :
+    p_units  ,
+    p_paper_size ,
+    p_width_units,
+    p_width,
+    p_height,
+    p_orientation,
+    --
+    p_page_header,
+    p_page_header_font_color,
+    p_page_header_font_family,
+    p_page_header_font_weight,
+    p_page_header_font_size,
+    p_page_header_alignment,
+    --
+    p_page_footer,
+    p_page_footer_font_color,
+    p_page_footer_font_family,
+    p_page_footer_font_weight,
+    p_page_footer_font_size,
+    p_page_footer_alignment,
+    --
+    p_header_bg_color,
+    p_header_font_color,
+    p_header_font_family,
+    p_header_font_weight,
+    p_header_font_size,
+    --
+    p_body_bg_color,
+    p_body_font_color,
+    p_body_font_family,
+    p_body_font_weight,
+    p_body_font_size,
+    --
+    p_border_width,
+    p_border_color  
+*/
   L_PRINT_CONFIG := APEX_DATA_EXPORT.GET_PRINT_CONFIG(P_ORIENTATION             => APEX_DATA_EXPORT.C_ORIENTATION_PORTRAIT,
                                                       P_PAGE_HEADER             => 'EBA_DEMO_APPR_EMP',
                                                       P_PAGE_HEADER_FONT_COLOR  => '#5f7d4f',
                                                       P_PAGE_HEADER_FONT_WEIGHT => APEX_DATA_EXPORT.C_FONT_WEIGHT_BOLD,
                                                       P_PAGE_HEADER_FONT_SIZE   => 14,
                                                       P_BORDER_WIDTH            => 2);
-  /*formats
+  ---- export file ----
+/* You can export these formats instead of C_FORMAT_PDF 
   c_format_csv   =>'CSV';
   c_format_html  =>'HTML';
   c_format_pdf   =>'PDF';
@@ -66,6 +111,8 @@ BEGIN
 
   APEX_EXEC.CLOSE(L_CONTEXT);
 
+  ---- insert file ----
+/* if you want to save data in DB */
   INSERT INTO TB_ATTACHMENT
     (FILE_NAME, MIME_TYPE, ROW_COUNT, CONTENT_BLOB)
   VALUES
@@ -74,8 +121,8 @@ BEGIN
      L_EXPORT.ROW_COUNT,
      L_EXPORT.CONTENT_BLOB);
   COMMIT;
-  APEX_DATA_EXPORT.DOWNLOAD(P_EXPORT              => L_EXPORT,
-                            P_STOP_APEX_ENGINE    => TRUE);
+---- download file ----
+  APEX_DATA_EXPORT.DOWNLOAD(P_EXPORT              => L_EXPORT);
 
 EXCEPTION
   WHEN OTHERS THEN
