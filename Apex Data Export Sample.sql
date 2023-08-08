@@ -7,7 +7,7 @@ DECLARE
   L_HIGHLIGHTS   APEX_DATA_EXPORT.T_HIGHLIGHTS;
 BEGIN
   ---- highlight row ----
-  /* if you want to  highlight just column , you must to set this parameter P_DISPLAY_COLUMN => 'YOUR_CLOUMN' */ 
+  /* if you want to  highlight just column, you must to set this parameter P_DISPLAY_COLUMN => 'YOUR_CLOUMN' */ 
   APEX_DATA_EXPORT.ADD_HIGHLIGHT(P_HIGHLIGHTS       => L_HIGHLIGHTS,
                                  P_ID               => 1,
                                  P_VALUE_COLUMN     => 'HIGHLIGHT1',
