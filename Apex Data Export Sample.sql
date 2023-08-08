@@ -31,7 +31,7 @@ BEGIN
   APEX_DATA_EXPORT.ADD_COLUMN(P_COLUMNS => L_COLUMNS, P_NAME => 'ENAME');
   APEX_DATA_EXPORT.ADD_COLUMN(P_COLUMNS => L_COLUMNS, P_NAME => 'SAL');
 
-
+  /* P_SQL_QUERY is your query */ 
   L_CONTEXT := APEX_EXEC.OPEN_QUERY_CONTEXT(P_LOCATION  => APEX_EXEC.C_LOCATION_LOCAL_DB,
                                             P_SQL_QUERY => '
                                             SELECT DEPTNO,
